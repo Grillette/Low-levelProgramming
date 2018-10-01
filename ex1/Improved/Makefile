@@ -1,6 +1,5 @@
-# Example Makefile
-#
-# Exercise 1, TDT4258
+# makefile of improved version
+# "make" compile and upload the code
 
 LD=arm-none-eabi-gcc
 AS=arm-none-eabi-as
