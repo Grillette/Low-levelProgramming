@@ -1,11 +1,14 @@
 	/////////////////////////////////////////////////////////////////////////////
 	//
-  // Various useful I/O addresses and definitions for EFM32GG
+  // Various useful I/ O addresses and definitions for EFM32GG
 	//
 	// TODO: Add more registers
 	//
 	/////////////////////////////////////////////////////////////////////////////
-
+	
+	//enalbe interruption
+	
+	GPIO_ENABLE_INTERRUPT = 0x802
 
 	      //////////////////////////////////////////////////////////////////////
       	// GPIO
@@ -18,7 +21,7 @@
 	      GPIO_PF_BASE = 0x400060b4
 
 	      // register offsets from base address
-	      GPIO_CTRL     = 0x00
+	    GPIO_CTRL     = 0x00
         GPIO_MODEL    = 0x04
         GPIO_MODEH    = 0x08
         GPIO_DOUT     = 0x0c

@@ -1,6 +1,4 @@
 
-   
- // gdb layout regs - si     
         .syntax unified
 	
 	      .include "efm32gg.s"
@@ -94,46 +92,62 @@ _reset:
 	      orr r2, r2, r3      
 	      //store new value
 	      str r2,[r1, #CMU_HFPERCLKEN0]
-	      
+	           
 	      //set high drive strength
 	      ldr r1, gpio_pa_base_addr
-	      mov r2, #0x0000002
+	      mov r2, 0x2
 	      str r2, [r1, #GPIO_CTRL]
 	      
 	      //set pins to output
-	      mov r2, #0x55555555
+	      mov r2, 0x55555555
 	      str r2, [r1, #GPIO_MODEH]
 	      
 	      //buttons setup in input 
 	      ldr r2, gpio_pc_base_addr
 	      mov r3, 0x33333333
 	      str r3, [r2, #GPIO_MODEL]
-	      mov r3, 0x000000ff
+	      mov r3, 0xff
 	      str r3, [r2, #GPIO_DOUT]
 	      
+	      //setup interruption
+	      ldr r4, gpio_base_addr
+	      mov r3, 0x22222222
+	      str r3,[r4,#GPIO_EXTIPSELL]
+	      mov r3, 0xFF
+	      str r3,[r4,#GPIO_EXTIFALL]
+	      str r3,[r4,#GPIO_EXTIRISE]
+	      str r3,[r4,#GPIO_IEN]
+	      ldr r3, =#GPIO_ENABLE_INTERRUPT
+	      ldr r5, =#ISER0
+	      str r3, [r5]
+	      //sleeping mode
+	      mov r3, #6
+	      ldr r5, =#SCR
+	      str r3, [r5]
+	      
 	   loop:
-	      
-	      bl subroutine_button_status
-	      //lsl r0, r0, #8
-	      //str r0, [r1, #GPIO_DOUT]
+	   	  wfi
 	      b loop
-
-subroutine_button_status:
-		push {r14}
-		ldr r0, [r2, #GPIO_DIN]
-		lsl r0, r0, #8
-	    str r0, [r1, #GPIO_DOUT]
-		pop	{r15}		      
 	      
-	      
+      
+	          
 cmu_base_addr:
 			.long CMU_BASE
+			
+gpio_base_addr:
+			.long GPIO_BASE
 				      
 gpio_pa_base_addr:
 			.long GPIO_PA_BASE	
 
 gpio_pc_base_addr:
-			.long GPIO_PC_BASE			
+			.long GPIO_PC_BASE
+
+
+			
+
+
+		
 	/////////////////////////////////////////////////////////////////////////////
 	//
   // GPIO handler
@@ -142,9 +156,14 @@ gpio_pc_base_addr:
 	/////////////////////////////////////////////////////////////////////////////
 	
         .thumb_func
-gpio_handler:  
-
-	      b .  // do nothing
+gpio_handler:
+	      	ldr r3, [r4, #GPIO_IF]
+			str r3, [r4, #GPIO_IFC]
+			ldr r0, [r2, #GPIO_DIN]  
+		  	lsl r0, r0, #8  
+		  	str r0, [r1, #GPIO_DOUT]			
+			bx lr
+			
 	
 	/////////////////////////////////////////////////////////////////////////////
 	
